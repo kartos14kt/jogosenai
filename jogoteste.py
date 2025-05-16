@@ -5,6 +5,9 @@ from random import randint
 import os
 import time
 
+from inim import Inimigo
+from pers import Perssprite
+from menu import menu
 
 pygame.init()
 
@@ -35,101 +38,9 @@ morreu = False
 relogio = pygame.time.Clock()
 
 # Carregar a sprite sheet
-sprite_sheet = pygame.image.load(os.path.join(diretorioimg, 'sprites.png')).convert_alpha()
-sprite_inimigo = pygame.image.load(os.path.join(diretorioimg, 'spriteinimigo.png')).convert_alpha()
+sprite_sheet = pygame.image.load(os.path.join(diretorioimg, 'personagem_sprites.png')).convert_alpha()
+sprite_inimigo = pygame.image.load(os.path.join(diretorioimg, 'inimigo_sprite.png')).convert_alpha()
 
-# Classe Perssprite
-# Classe Perssprite
-
-
-class Inimigo(pygame.sprite.Sprite):
-    def __init__(self, x, y, largura_frame, altura_frame, velocidade):
-        super().__init__()
-        self.largura_frame = largura_frame  # Define largura_frame como um atributo da classe
-        self.altura_frame = altura_frame  # Define altura_frame como um atributo da classe
-        self.frame_inimigo = []  
-        self.carregar_frames()  
-        self.index_lista = 0
-        self.image = self.frame_inimigo[self.index_lista] 
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (randint(493, 1100 - self.largura_frame), y)
-        self.velocidade = velocidade
-
-    def carregar_frames(self):
-        for i in range(5):  # Assume que há 5 frames na sprite sheet
-            frame = sprite_inimigo.subsurface((i * 64, 0, 64, 64))  # Recorta cada frame
-            self.frame_inimigo.append(frame)  # Adiciona o frame à lista
-
-    def movimento(self):
-        global pontos  # Indica que estamos usando a variável global 'pontos'
-
-        # Movimento do inimigo (descendo na tela)
-        self.rect.y += self.velocidade
-        if self.rect.top > altura:  # Se sair da tela, reinicia no topo
-            self.rect.y = 0
-            self.rect.x = randint(493, 1100 - self.largura_frame)
-            pontos += 1
-            self.velocidade += 0.1
-        
-    def update(self):
-        self.movimento()
-
-        # Atualizar animação
-        self.index_lista += 0.2
-        if self.index_lista >= len(self.frame_inimigo):
-            self.index_lista = 0
-        self.image = self.frame_inimigo[int(self.index_lista)]
-
-
-
-
-
-class Perssprite(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.frames_esquerda = []
-        self.frames_direita = []
-        self.carregar_frames()
-        self.index_lista = 0
-        self.image = self.frames_direita[self.index_lista]  # Começa com a animação para a direita
-        self.rect = self.image.get_rect()
-        self.rect.center = (largura // 2, altura // 2)  # Centraliza o personagem na tela
-        self.velocidade = 3
-        self.direcao = "direita"  # Direção inicial
-
-    def carregar_frames(self):
-        # Carregar os frames da sprite sheet
-        for i in range(3):  # Assume que há 3 frames por linha
-            # Primeira linha: frames para a esquerda
-            img_esquerda = sprite_sheet.subsurface((i * 64, 0, 64, 64))
-            self.frames_esquerda.append(img_esquerda)
-
-            # Segunda linha: frames para a direita
-            img_direita = sprite_sheet.subsurface((i * 64, 64, 64, 64))
-            self.frames_direita.append(img_direita)
-
-    def update(self, keys):
-        # Movimento do personagem
-        if keys[K_w] and self.rect.top > 0:
-            self.rect.y -= self.velocidade
-        if keys[K_s] and self.rect.bottom < altura:
-            self.rect.y += self.velocidade
-        if keys[K_a] and self.rect.left > 0:
-            self.rect.x -= self.velocidade
-            self.direcao = "esquerda"  # Atualiza a direção
-        if keys[K_d] and self.rect.right < largura:
-            self.rect.x += self.velocidade
-            self.direcao = "direita"  # Atualiza a direção
-
-        # Atualizar animação com base na direção
-        self.index_lista += 0.2
-        if self.index_lista >= len(self.frames_esquerda):  # Tanto faz frames_esquerda ou frames_direita
-            self.index_lista = 0
-
-        if self.direcao == "esquerda":
-            self.image = self.frames_esquerda[int(self.index_lista)]
-        elif self.direcao == "direita":
-            self.image = self.frames_direita[int(self.index_lista)]
 
 # Função para reiniciar o jogo
 def reinicio():
@@ -141,7 +52,7 @@ def reinicio():
 
     # Reiniciar o grupo de inimigos
     grupo_inimigos.empty()  # Remove todos os inimigos do grupo
-    inimigo = Inimigo(50, 50, 64, 64, 1)  # Cria um novo inimigo com velocidade inicial
+    inimigo = Inimigo(50, 50, 64, 64, 1, sprite_inimigo, largura, altura)  # Cria um novo inimigo com velocidade inicial
     grupo_inimigos.add(inimigo)
 
     grupo_consumiveis.empty()
@@ -226,7 +137,7 @@ class Consumivel(pygame.sprite.Sprite):
             print("Velocidade aumentada!")
 
 # Inicialização do personagem
-personagem = Perssprite()
+personagem = Perssprite(largura, altura, sprite_sheet)
 
 # Grupo de sprites
 todassprites = pygame.sprite.Group()
@@ -235,7 +146,7 @@ todassprites.add(personagem)
 
 
 # Configurações do inimigo
-inimigo = Inimigo(50, 50, 64, 64, 1)
+inimigo = Inimigo(50, 50, 64, 64, 1, sprite_inimigo, altura, largura)
 proximo_inimigo = 10
 
 grupo_inimigos = pygame.sprite.Group()
@@ -256,6 +167,9 @@ grupo_consumiveis.add(consumivel_vida, consumivel_velocidade)
 
 nova_vida = 25
 nova_velocidade = 50
+
+if __name__ == "__main__":
+    menu() 
 while True:
     relogio.tick(60)
     tela.fill(preto)
@@ -274,8 +188,8 @@ while True:
 
     # Atualizar sprites
     keys = pygame.key.get_pressed()
-    todassprites.update(keys)
-    grupo_inimigos.update()  # Atualiza o inimigo
+    todassprites.update(keys, largura, altura) 
+    grupo_inimigos.update([pontos])  # Atualiza o inimigo
     grupo_consumiveis.update()
     
 
@@ -314,15 +228,6 @@ while True:
         novo_consumivel_velocidade = Consumivel(randint(493, 1100 - 32), 0, "velocidade")
         grupo_consumiveis.add(novo_consumivel_velocidade)
         nova_velocidade += 50  # Atualiza para o próximo intervalo
-
-    ''' if pontos >= nova_vida:
-        nova_vida += 25
-        nova_vida = Consumivel(randint(493, 1100 - 32), 0, "vida")
-        grupo_consumiveis.add(nova_vida)
-    if pontos >= nova_velocidade:
-        nova_velocidade += 50
-        nova_velocidade = Consumivel(randint(493, 1100 - 32), 0, "velocidade")
-        grupo_consumiveis.add(nova_velocidade)'''
 
 
     # Desenhar sprites
