@@ -3,18 +3,40 @@ import pygame
 class Perssprite(pygame.sprite.Sprite):
     def __init__(self, largura, altura, sprite_sheet):
         super().__init__()
-        self.frames_esquerda = []
-        self.frames_direita = []
-        self.carregar_frames(sprite_sheet)
-        self.index_lista = 0
-        self.image = self.frames_direita[self.index_lista]
-        self.rect = self.image.get_rect()
-        self.rect.center = (largura // 2, altura // 2)
-        self.velocidade = 3
+        self.sprite_sheet = sprite_sheet
+        self.frame_atual = 0
         self.direcao = "direita"
-        self.velocidade_pulo = 0
+        self.contador_anim = 0
+        self.index_lista = 0
+        self.velocidade = 3
         self.pulo = False
-        self.pos_y_inicial = self.rect.y
+        self.velocidade_pulo = 0
+        self.pos_y_inicial = 0
+
+        # Carrega todos os frames das animações
+        self.carregar_frames(sprite_sheet)
+
+        # Inicializa a imagem e o rect
+        self.image = self.frames_direita[0]
+        self.rect = self.image.get_rect()
+        
+    def andar_animacao(self):
+        # Escolhe a lista de frames conforme a direção
+        if self.direcao == "direita":
+            frames = self.frames_direita
+        elif self.direcao == "cima":
+            frames = self.frames_cima
+        elif self.direcao == "baixo":
+            frames = self.frames_baixo
+        else:
+            frames = [self.image]
+
+        # Atualiza o frame da animação
+        self.contador_anim += 1
+        if self.contador_anim >= 6:  # Troca de frame a cada 6 ticks (ajuste como quiser)
+            self.frame_atual = (self.frame_atual + 1) % len(frames)
+            self.image = frames[self.frame_atual]
+            self.contador_anim = 0
 
     def carregar_frames(self, sprite_sheet):
         self.frames_baixo = []
@@ -91,3 +113,22 @@ class Perssprite(pygame.sprite.Sprite):
                 self.rect.y = self.pos_y_inicial
                 self.pulo = False
                 self.velocidade_pulo = 0
+
+def animacao_subir_tela(personagem, tela, fundo, destino_y, largura, altura):
+    """
+    Faz o personagem surgir de fora da tela (embaixo) e subir até destino_y,
+    usando a animação de andar para cima.
+    """
+    clock = pygame.time.Clock()
+    personagem.direcao = "cima"
+    personagem.rect.x = largura // 2 - personagem.rect.width // 2  # Centraliza no eixo X
+    personagem.rect.y = altura  # Começa fora da tela (embaixo)
+
+    while personagem.rect.y > destino_y:
+        personagem.rect.y -= 2  # Ajuste a velocidade aqui (quanto menor, mais devagar)
+        personagem.andar_animacao()
+        tela.blit(fundo, (0, 0))
+        tela.blit(personagem.image, personagem.rect.topleft)
+        pygame.display.flip()
+        clock.tick(60)
+    personagem.rect.y = destino_y

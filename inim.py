@@ -11,7 +11,7 @@ class Inimigo(pygame.sprite.Sprite):
         self.index_lista = 0
         self.image = self.frame_inimigo[self.index_lista]
         self.rect = self.image.get_rect()
-        self.rect.topleft = (randint(493, 1100 - self.largura_frame), y)
+        self.rect.topleft = (randint(493, 1100 - self.largura_frame), -75)
         self.velocidade = velocidade
         self.altura = altura
         self.largura = largura
