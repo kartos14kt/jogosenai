@@ -8,7 +8,7 @@ class Perssprite(pygame.sprite.Sprite):
         self.direcao = "direita"
         self.contador_anim = 0
         self.index_lista = 0
-        self.velocidade = 3
+        self.velocidade = 2
         self.pulo = False
         self.velocidade_pulo = 0
         self.pos_y_inicial = 0

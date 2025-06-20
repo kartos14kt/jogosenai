@@ -52,7 +52,7 @@ def animar_saida_personagem(personagem_menu, largura, altura):
         tela.blit(fundo_menu, (0, 0))
         desenhar_botao("Iniciar", 100, 120, 200, 60, False)
         desenhar_botao("Saves", 100, 250, 200, 60, False)
-        desenhar_botao("Skills", 100, 380, 200, 60, False)
+        desenhar_botao("Armas", 100, 380, 200, 60, False)
         tela.blit(personagem_menu.image, personagem_menu.rect.topleft)
         pygame.display.flip()
         clock.tick(60)
@@ -65,7 +65,7 @@ def animar_saida_personagem(personagem_menu, largura, altura):
         tela.blit(fundo_menu, (0, 0))
         desenhar_botao("Iniciar", 100, 120, 200, 60, False)
         desenhar_botao("Saves", 100, 250, 200, 60, False)
-        desenhar_botao("Skills", 100, 380, 200, 60, False)
+        desenhar_botao("Armas", 100, 380, 200, 60, False)
         tela.blit(personagem_menu.image, personagem_menu.rect.topleft)
         pygame.display.flip()
         clock.tick(60)
@@ -95,7 +95,7 @@ def menu():
 
         desenhar_botao(texto_jogo, *botao_jogo, mouse_sobre_jogo or personagem_sobre_jogo)
         desenhar_botao("Saves", *botao_saves, mouse_sobre_saves or personagem_sobre_saves)
-        desenhar_botao("Skills", *botao_skills, mouse_sobre_skills or personagem_sobre_skills)
+        desenhar_botao("Armas", *botao_skills, mouse_sobre_skills or personagem_sobre_skills)
 
         keys = pygame.key.get_pressed()
         personagem_menu.update(keys, largura, altura)
@@ -122,7 +122,7 @@ def menu():
                 if botao_saves.collidepoint(mx, my):
                     print("Saves selecionado")
                 if botao_skills.collidepoint(mx, my):
-                    print("Skills selecionado")
+                    print("Armas selecionado")
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     rodando = False
