@@ -33,28 +33,75 @@ def desenha_gradiente_horizontal(surface, largura, altura, pos_x=0, pos_y=0):
 # Fonte Comic Sans
 fonte_pistola = pygame.font.SysFont("comicsansms", 24, bold=True)
 texto_pistola = fonte_pistola.render("PISTOLA", True, (255, 255, 255))
+texto_moedas = fonte_pistola.render("20 moedas", True, (255, 255, 0))  # Amarelo
 
-while True:
-    pygame.draw.rect(screen, (255, 0, 0), (0, 0, 600, 865))  # retângulo vermelho
-    screen.blit(img_fundo, (0, 0))
-    screen.blit(img_arsenal, (0, 0))
-    desenha_gradiente_horizontal(screen, 600, 865, 600, 0)
-    screen.blit(sprite_pistola, (45, 83))  # desenha a primeira sprite do spritesheet na posição (45, 83)
+# Botão centralizado no topo (y=10)
+botao_largura, botao_altura = 100, 50
+botao_x = (LARGURA // 2) - (botao_largura // 2)
+botao_y = 10
+botao_rect = pygame.Rect(botao_x, botao_y, botao_largura, botao_altura)
 
-    mouse_pos = pygame.mouse.get_pos()
-    pistola_rect = pygame.Rect(45, 83, 100, 100)
-    if pistola_rect.collidepoint(mouse_pos):
-        texto_x = 55 + (100 - texto_pistola.get_width()) // 2
-        texto_y = 83 + 100  # 10 pixels abaixo da imagem
-        screen.blit(texto_pistola, (texto_x, texto_y))
+# Cor do botão e borda
+cor_botao = (50, 50, 200)
+cor_borda = (255, 255, 0)
 
-        
-    pygame.display.flip()
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE: # Pressionar ESC para sair
+def menu_guerra():
+    while True:
+        pygame.draw.rect(screen, (255, 0, 0), (0, 0, 600, 865))  # retângulo vermelho
+        screen.blit(img_fundo, (0, 0))
+        screen.blit(img_arsenal, (0, 0))
+        desenha_gradiente_horizontal(screen, 600, 865, 600, 0)
+        screen.blit(sprite_pistola, (45, 83))
+
+        # Desenha o botão GUERRA
+        pygame.draw.rect(screen, cor_botao, botao_rect)
+        pygame.draw.rect(screen, cor_borda, botao_rect, 3)  # borda amarela
+        texto_menu = fonte_pistola.render("GUERRA", True, (255,255,255))
+        texto_menu_rect = texto_menu.get_rect(center=botao_rect.center)
+        screen.blit(texto_menu, texto_menu_rect)
+
+        # Botão VOLTAR (transparente, só texto, logo abaixo do botão guerra)
+        botao_voltar_y = botao_y + botao_altura + 10
+        texto_voltar = fonte_pistola.render("VOLTAR", True, (255,255,255))
+        texto_voltar_rect = texto_voltar.get_rect(center=(botao_x + botao_largura//2, botao_voltar_y + botao_altura//2))
+        screen.blit(texto_voltar, texto_voltar_rect)
+        botao_voltar_rect = pygame.Rect(botao_x, botao_voltar_y, botao_largura, botao_altura)
+
+        mouse_pos = pygame.mouse.get_pos()
+        pistola_rect = pygame.Rect(45, 83, 100, 100)
+        if pistola_rect.collidepoint(mouse_pos):
+            texto_x = 50 + (100 - texto_pistola.get_width()) // 2
+            texto_y = 83 - texto_pistola.get_height() - 5
+            screen.blit(texto_pistola, (texto_x, texto_y))
+            moedas_x = 50 + (100 - texto_moedas.get_width()) // 2
+            moedas_y = 83 + 100 + 5
+            screen.blit(texto_moedas, (moedas_x, moedas_y))
+
+        pygame.display.flip()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if botao_rect.collidepoint(event.pos):
+                    from armas import menufuturo
+                    menufuturo.menu_futuro()
+                    return
+                if botao_voltar_rect.collidepoint(event.pos):
+                    return "voltar"
+
+# Executa o menu guerra se este arquivo for o principal
+if __name__ == "__main__":
+    while True:
+        from menu import menu
+        acao_menu = menu()
+        if acao_menu == "iniciar":
+            # Aqui você pode iniciar o jogo, se desejar
+            break
+        elif acao_menu == "sair" or acao_menu is None:
+            break
+        # Se acao_menu == "voltar" ou qualquer outro valor, apenas continua o loop e reabre o menu

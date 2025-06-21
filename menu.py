@@ -109,7 +109,12 @@ def menu():
             if personagem_menu.rect.colliderect(botao_saves):
                 print("Saves selecionado (pulo)")
             if personagem_menu.rect.colliderect(botao_skills):
-                print("Skills selecionado (pulo)")
+                print("Armas selecionado (pulo)")
+                from armas import menuguerra
+                resultado = menuguerra.menu_guerra()
+                if resultado == "voltar":
+                    continue
+                return
         pulo_anterior = personagem_menu.pulo
 
         for event in pygame.event.get():
@@ -117,19 +122,22 @@ def menu():
                 rodando = False
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if botao_jogo.collidepoint(mx, my):
-                    print("Iniciar/Continuar selecionado")
                     return "iniciar"
                 if botao_saves.collidepoint(mx, my):
                     print("Saves selecionado")
                 if botao_skills.collidepoint(mx, my):
-                    print("Armas selecionado")
+                    from armas import menuguerra
+                    resultado = menuguerra.menu_guerra()
+                    if resultado == "voltar":
+                        continue
+                    return
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     rodando = False
                 if event.key == pygame.K_SPACE:
                     personagem_menu.pular()
-
         pygame.display.flip()
+    return "sair"
 
 if __name__ == "__main__":
     menu()

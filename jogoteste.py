@@ -229,12 +229,15 @@ if __name__ == "__main__":
 
                 # Criar novo inimigo a cada múltiplo de pontos
                 if pontos[0] >= proximo_inimigo:
+                    # Ao aparecer um novo inimigo, todos voltam para a velocidade inicial (3)
+                    for inimigo in grupo_inimigos:
+                        inimigo.velocidade = 3
                     novo_inimigo = Inimigo(
                         randint(493, 1100 - 64),  # x
                         -40,                      # y
                         64,                       # largura_frame
                         64,                       # altura_frame
-                        randint(4, 7),            # velocidade aumentada
+                        3,                        # velocidade inicial
                         sprite_inimigo,           # imagem do inimigo
                         altura,                   # altura da tela
                         largura                   # largura da tela
@@ -242,8 +245,8 @@ if __name__ == "__main__":
                     grupo_inimigos.add(novo_inimigo)
                     proximo_inimigo += 10
 
-                # Gerar moeda aleatoriamente (exemplo: 1% de chance por frame)
-                if randint(1, 100) == 1:
+                # Gerar moeda aleatoriamente (exemplo: 0.2% de chance por frame)
+                if randint(1, 500) == 1:
                     moeda = Moeda(spritesheet_moeda, altura, largura)
                     grupo_moedas.add(moeda)
 
